@@ -1,3 +1,22 @@
+# COMP 20: Lab 8 - The Server Side using Node.js and Heroku
+
+## Purpose
+to set up Node.js, MongoDB, and Heroku, to understand how a web server serves dynamic and static content, and to build and deploy a simple server-side web application to Heroku
+
+## Implementation
+All specifications were correctly implemented.
+
+## Time Dedicated
+3 hours
+
+## Acknowledgements
+* Credit and thanks to the instructors and teaching assistants of Tufts COMP 20.
+    
+## References
+* [Getting Started with Node on Heroku](https://devcenter.heroku.com/articles/getting-started-with-nodejs)
+
+Original README.md from Heroku:
+
 # node-js-getting-started
 
 A barebones Node.js app using [Express 4](http://expressjs.com/).
