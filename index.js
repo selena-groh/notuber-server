@@ -19,6 +19,9 @@ app.get('/cool', function(request, response) {
 });
 
 app.post('/submit', function(request, response) {
+  response.header("Access-Control-Allow-Origin", "*");
+  response.header("Access-Control-Allow-Headers", "X-Requested-With");
+  
   response.json({"vehicles": [], "passengers": []})
 });
 
