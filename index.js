@@ -22,7 +22,7 @@ app.post('/submit', function(request, response) {
   response.header("Access-Control-Allow-Origin", "*");
   response.header("Access-Control-Allow-Headers", "X-Requested-With");
   
-  response.json({"vehicles": [], "passengers": []})
+  response.json({"vehicles":[], "passengers":[]})
 });
 
 app.listen(app.get('port'), function() {
