@@ -18,9 +18,9 @@ app.post('/submit', function(request, response) {
   response.header("Access-Control-Allow-Origin", "*");
   response.header("Access-Control-Allow-Headers", "X-Requested-With");
 
-  var username = request.query.username;
-  var lat = request.query.lat;
-  var lng = request.query.lng;
+  var username = request.body.username;
+  var lat = request.body.lat;
+  var lng = request.body.lng;
 
   if (username && lat && lng) {
   	response.json({"cool":"yay"});
