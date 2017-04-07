@@ -95,7 +95,7 @@ app.post('/submit', function(request, response) {
 						console.log("Error: " + error);
 						response.send(500);
 					} else {
-						response.json(JSON.stringify(users));
+						response.json({returnType: JSON.stringify(users)});
 					}
 				});
 			}
