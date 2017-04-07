@@ -95,7 +95,14 @@ app.post('/submit', function(request, response) {
 						console.log("Error: " + error);
 						response.send(500);
 					} else {
-						response.json({returnType: JSON.stringify(users)});
+						var returnValue;
+						if (returnType === "passengers") {
+							returnValue = {passengers: users};
+							response.json(JSON.stringify(returnValue));
+						} else if (returnType === "vehicles") {
+							returnValue = {vehicles: users};
+							response.json(JSON.stringify(returnValue));
+						}
 					}
 				});
 			}
