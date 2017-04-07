@@ -22,6 +22,8 @@ app.use(express.static(__dirname + '/public'));
 /*app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs'); */
 
+var vehicleNames = ['JANET','ilFrXqLz', 't4wcLoCT', 'WnVPdTjF', '1fH5MXna', '4aTtB30R', '8CXROgIF', 'w8XMS577', 'ZywrOTLJ', 'cQRzspF5', 'GSXHB9L1', 'TztAkR2g', 'aSOqNo4S', 'ImjNJW4n', 'svEQIneI', 'N10SCqi5', 'QQjjwwH2', 'H0pfmYGr', 'FyUHoAvS', 'bgULOMsX', 'OlOBzZF8', 'Ln7b7ODx', 'ZoxN11Sa', 'itShXf78', 'o6kJKzyI', 'pD0kGOax', 'njr1i7xM', 'wtDRzig8', 'l2r8bViT', 'oZn3b2OZ', 'ym2J1vil'];
+
 app.get('/', function(request, response) {
   //response.render('pages/index');
 	//response.sendFile('/index.html');
@@ -41,43 +43,63 @@ app.get('/', function(request, response) {
 				index += '</div></body></html>';
 				response.send(index);
 			}
-		})
-	})
+		});
+	});
 });
 
 app.post('/submit', function(request, response) {
   response.header("Access-Control-Allow-Origin", "*");
   response.header("Access-Control-Allow-Headers", "X-Requested-With");
 
+  var type = 'passengers';
+  var returnType = 'vehicles';
   var username = request.body.username;
   var lat = request.body.lat;
   var lng = request.body.lng;
-  var created_at = Date();
-
-  var newDocument = {
-  	"username": username,
-  	"lat": lat,
-  	"lng": lng,
-  	"created_at": created_at
-  };
+  var created_at = new Date();
 
   if (username && lat && lng) {
-    db.collection('vehicles', function(error, coll) {
+    for (var v = 0; v < vehicleNames.length; v += 1) {
+    	if (username === vehicleNames[v]) {
+    		type = 'vehicles';
+    		returnType = 'passengers';
+    	}
+    }
+
+    db.collection(type, function(error, coll) {
 		  if (error) {
 		    console.log("Error: " + error);
 		  	response.sendStatus(500);		  
 		  } else {
 			  coll.update(
-			  	{ username: newDocument.username},
+			  	{ username: username},
 			  	{
-			  		username: newDocument.username,
-			  		lat: newDocument.lat,
-			  		lng: newDocument.lng,
-			  		created_at: newDocument.created_at
+			  		username: username,
+			  		lat: lat,
+			  		lng: lng,
+			  		created_at: created_at
 			  	},
 			  	{ upsert: true}
 			  );
 			}
+		});
+
+		db.collection(returnType, function(error, collection) {
+			if (error) {
+				console.log("Error: " + error);
+				response.send(500);
+			} else {
+				var fiveMinAgo = new Date(created_at - (5 * 60 * 1000));
+				collection.find({created_at:{$gte: fiveMinAgo}}).toArray(function(error, users) {
+					if (error) {
+						console.log("Error: " + error);
+						response.send(500);
+					} else {
+						response.json(JSON.stringify(users));
+					}
+				});
+			}
+		});
 	/*		  coll.insert(newDocument, function(error, saved) {
 			  	if (error) {
 			      console.log("Error: " + error);
@@ -86,7 +108,6 @@ app.post('/submit', function(request, response) {
 			  	  response.json({"message": "added!"});
 			  	}
 		  }); */
-		});
   } else {
   	response.json({"error":"Whoops, something is wrong with your data!"});
   }
