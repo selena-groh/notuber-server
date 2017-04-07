@@ -1,7 +1,20 @@
 var express = require('express');
 var app = express();
+var bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({extended: true}));
 
 app.set('port', (process.env.PORT || 5000));
+
+// Mongo initialization and connect to database
+// process.env.MONGOLAB_URI is the environment variable on Heroku for the MongoLab add-on
+// process.env.MONGOHQ_URL is the environment variable on Heroku for the MongoHQ add-on
+// If environment variables not found, fall back to mongodb://localhost/nodemongoexample
+// nodemongoexample is the name of the database
+var mongoUri = process.env.MONGODB_URI || process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || 'mongodb://localhost/nodemongoexample';
+var MongoClient = require('mongodb').MongoClient, format = require('util').format;
+var db = MongoClient.connect(mongoUri, function(error, databaseConnection) {
+	db = databaseConnection;
+});
 
 app.use(express.static(__dirname + '/public'));
 
@@ -11,7 +24,25 @@ app.set('view engine', 'ejs'); */
 
 app.get('/', function(request, response) {
   //response.render('pages/index');
-  response.sendFile('/index.html');
+	//response.sendFile('/index.html');
+
+	response.set('Content-Type', 'text/html');
+	var index = '';
+
+	db.collection('passengers', function(error, collection) {
+		collection.find().sort({created_at: -1}).toArray(function(error, passengers) {
+			if (error) {
+				response.send('<!DOCTYPE HTML><html><head><title>ERROR</title></head><body><h1>ERROR getting passenger list</h1></body></html>');
+			} else {
+				index += '<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/><title>The Black Car Service Passengers</title><link rel="stylesheet" href="style.css" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Dancing+Script|Raleway" rel="stylesheet"/></head><body><div id="header"><div id="header-text"><h1>The Black Car Service Passengers</h1>' + "<h4>Get where you're going in style</h4></div></div>" + '<div id="main-passenger">';
+				for (var i = 0; i < passengers.length; i += 1) {
+					index += "<p>" + passengers[i].username + " requested a vehicle at " + passengers[i].lat + ", " + passengers[i].lng + " on " + passengers[i].created_at + ".</p>";
+				}
+				index += '</div></body></html>';
+				response.send(index);
+			}
+		})
+	})
 });
 
 app.post('/submit', function(request, response) {
@@ -21,18 +52,49 @@ app.post('/submit', function(request, response) {
   var username = request.body.username;
   var lat = request.body.lat;
   var lng = request.body.lng;
+  var created_at = Date();
+
+  var newDocument = {
+  	"username": username,
+  	"lat": lat,
+  	"lng": lng,
+  	"created_at": created_at
+  };
 
   if (username && lat && lng) {
-  	response.json({"cool":"yay"});
+    db.collection('vehicles', function(error, coll) {
+		  if (error) {
+		    console.log("Error: " + error);
+		  	response.sendStatus(500);		  
+		  } else {
+			  coll.update(
+			  	{ username: newDocument.username},
+			  	{
+			  		username: newDocument.username,
+			  		lat: newDocument.lat,
+			  		lng: newDocument.lng,
+			  		created_at: newDocument.created_at
+			  	},
+			  	{ upsert: true}
+			  );
+			}
+	/*		  coll.insert(newDocument, function(error, saved) {
+			  	if (error) {
+			      console.log("Error: " + error);
+			  	  response.send(500);
+			  	} else {
+			  	  response.json({"message": "added!"});
+			  	}
+		  }); */
+		});
   } else {
-  	response.json({"username":username, "lat":lat, "lng":lng});
   	response.json({"error":"Whoops, something is wrong with your data!"});
   }
 
 /*  if (passenger) {
     response.json({"vehicles":[]});
   } */
-  response.json({"passengers":[]});
+ // response.json({"passengers":[]});
 });
 
 app.get('/vehicle.json', function(request, response) {
@@ -40,7 +102,30 @@ app.get('/vehicle.json', function(request, response) {
   if (!username) {
   	response.json({});
   } else {
-	response.json({"_id":"589bd30f8451126182dfbc62","username":username,"lat":10.1,"lng":10.2,"created_at":"2017-02-09T02:25:19.575Z"});
+		db.collection('vehicles', function(error, coll) {
+		  if (error) {
+		    console.log("Error: " + error);
+		  	response.sendStatus(500);		  
+		  } else {
+				coll.find({username: username}).toArray(function(error, documents) {
+				  var document = documents[0];
+				  if (document) {
+				  	response.json(document);
+				  } else {
+				  	response.json({});
+				  }
+				});
+			}
+	/*		  coll.insert(newDocument, function(error, saved) {
+			  	if (error) {
+			      console.log("Error: " + error);
+			  	  response.send(500);
+			  	} else {
+			  	  response.json({"message": "added!"});
+			  	}
+		  }); */
+		});
+		//response.json({"_id":"589bd30f8451126182dfbc62","username":username,"lat":10.1,"lng":10.2,"created_at":"2017-02-09T02:25:19.575Z"});
   }
   //vehicle = 
   //response.json(vehicle);

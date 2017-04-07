@@ -28,6 +28,10 @@ html, body {
   color: white;
 }
 
+#main-passenger {
+  margin: 20px;
+}
+
 #footer {
   height: 40px;
   display: flex;
@@ -50,14 +54,6 @@ h1 {
   font-family: "Dancing Script";
 }
 
-#infowindow {
-  text-align: center;
-}
-
 h3 {
   color: #DC143C;
-}
-
-#map {
-  height: calc(100% - 80px - 40px);
 }
