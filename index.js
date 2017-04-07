@@ -22,7 +22,9 @@ app.post('/submit', function(request, response) {
   var lat = request.query.lat;
   var lng = request.query.lng;
 
-  if (!username || !lat || !lng) {
+  if (username && lat && lng) {
+  	response.json({"cool":"yay"});
+  } else {
   	response.json({"error":"Whoops, something is wrong with your data!"});
   }
 
