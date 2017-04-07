@@ -97,10 +97,10 @@ app.post('/submit', function(request, response) {
 					} else {
 						var returnValue;
 						if (returnType === "passengers") {
-							returnValue = {passengers: users};
+							returnValue.passengers = users;
 							response.json(JSON.stringify(returnValue));
 						} else if (returnType === "vehicles") {
-							returnValue = {vehicles: users};
+							returnValue.vehicles = users};
 							response.json(JSON.stringify(returnValue));
 						}
 					}
