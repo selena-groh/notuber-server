@@ -95,13 +95,12 @@ app.post('/submit', function(request, response) {
 						console.log("Error: " + error);
 						response.send(500);
 					} else {
-						var returnValue;
 						if (returnType === "passengers") {
-							returnValue.passengers = users;
-							response.json(JSON.stringify(returnValue));
+							var passengersReturn = {passengers: users};
+							response.send(JSON.stringify(passengersReturn));
 						} else if (returnType === "vehicles") {
-							returnValue.vehicles = users};
-							response.json(JSON.stringify(returnValue));
+							var vehiclesReturn = {vehicles: users};
+							response.send(JSON.stringify(vehiclesReturn));
 						}
 					}
 				});
