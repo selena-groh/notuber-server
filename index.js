@@ -25,6 +25,7 @@ app.post('/submit', function(request, response) {
   if (username && lat && lng) {
   	response.json({"cool":"yay"});
   } else {
+  	response.json({"username":username, "lat":lat, "lng":lng});
   	response.json({"error":"Whoops, something is wrong with your data!"});
   }
 
