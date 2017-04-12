@@ -36,7 +36,7 @@ app.get('/', function(request, response) {
 			if (error) {
 				response.send('<!DOCTYPE HTML><html><head><title>ERROR</title></head><body><h1>ERROR getting passenger list</h1></body></html>');
 			} else {
-				index += '<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/><title>The Black Car Service Passengers</title><link rel="stylesheet" href="style.css" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Dancing+Script|Raleway" rel="stylesheet"/></head><body><div id="header"><div id="header-text"><h1>The Black Car Service Passengers</h1>' + "<h4>Get where you're going in style</h4></div></div>" + '<div id="main-passenger">';
+				index += '<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/><title>The Black Car Service Passenger List</title><link rel="stylesheet" href="style.css" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Dancing+Script|Raleway" rel="stylesheet"/></head><body><div id="header"><div id="header-text"><h1>The Black Car Service Passenger List</h1>' + "<h4>Get where you're going in style</h4></div></div>" + '<div id="main-passenger">';
 				for (var i = 0; i < passengers.length; i += 1) {
 					index += "<p>" + passengers[i].username + " requested a vehicle at " + passengers[i].lat + ", " + passengers[i].lng + " on " + passengers[i].created_at + ".</p>";
 				}
@@ -54,8 +54,8 @@ app.post('/submit', function(request, response) {
   var type = 'passengers';
   var returnType = 'vehicles';
   var username = request.body.username;
-  var lat = request.body.lat;
-  var lng = request.body.lng;
+  var lat = parseFloat(request.body.lat);
+  var lng = parseFloat(request.body.lng);
   var created_at = new Date();
 
   if (username && lat && lng) {
